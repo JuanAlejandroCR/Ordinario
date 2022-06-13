@@ -1,0 +1,356 @@
+swagger: "2.0"
+info:
+  description: "API que nos permite registrar transacciones de usuario y tener un panorama general de como usan su dinero. Contempla el CRUD tanto para usuarios y transacciones. Se almacenan en MongoDB."
+  version: "1.0.0"
+  title: "Swagger API TRANSU"
+  contact:
+    email: "alejuandro207@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:5000"
+#basePath: "/v"
+
+tags:
+- name: "users"
+  description: "Usuarios en el sistema"
+- name: "transactions"
+  description: "Transacciones en el sistema"
+- name: "summary"
+  description: "Resumen de las transacciones"
+
+schemes:
+- "http"
+paths:
+  /users:
+    post:
+      tags:
+      - "users"
+      summary: "Añade un nuevo usauario"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Usuario que necesita ser añadido"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: "msg: Usuario creado ,usuario : usuario creado, ejemplo :"
+          schema:
+            $ref: "#/definitions/UserExample"
+        "404":
+          description: "Usuario existente en la db"
+    get:
+      tags:
+      - "users"
+      summary: "Obtiene los usuarios"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Muestra la lista de usuarios"
+        "404":
+          description: "msg: No hay usuarios la db"
+  /users/{user_email}:
+    get:
+      tags:
+      - "users"
+      summary: "Obtiene un usuario"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "user_email"
+        in: "path"
+        description: "Email del usuario deseado"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Muestra el usuario" 
+        "404":
+          description: "msg: Usuario no existe en la db"
+    put:
+      tags:
+      - "users"
+      summary: "Actualiza un usuario"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "user_email"
+        in: "path"
+        description: "Email del usuario deseado"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "msg: Usuario actualizado"
+        "404":
+          description: "msg: Usuario no existe en la db"
+    delete:
+      tags:
+      - "users"
+      summary: "Borra un usuario"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "user_email"
+        in: "path"
+        description: "Email del usuario deseado"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "msg: Usuario eliminado"
+        "404":
+          description: "msg: Usuario no existe en la db"
+  /transactions:
+    get:
+      tags:
+      - "transactions"
+      summary: "Obtiene las transacciones"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Muestra la lista de transacciones"
+        "404":
+          description: "msg: No hay transacciones la db"
+    post:
+      tags:
+      - "transactions"
+      summary: "Añade una nueva transacción"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Transacción que necesita ser añadida"
+        required: true
+        schema:
+          $ref: "#/definitions/Transaction"
+      responses:
+        "200":
+          description: "msg: Transaccion creada ,transaccion : transaccion creada,ejemplo :"
+          schema:
+            $ref: "#/definitions/TransactionExample"
+
+        "404":
+          description: "Dependiendo del body, msg: Transaccion existente en la db o Usuario no existe en la db o ..."  
+          schema:
+            $ref: "#/definitions/MsgTransaction"
+  /transactions/{reference}:
+    get:
+      tags:
+      - "transactions"
+      summary: "Obtiene una transacción"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reference"
+        in: "path"
+        description: "Reference de la petición deseada"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Muestra la transacción"
+        "404":
+          description: "msg: Transaccion no existe en la db"
+    put:
+      tags:
+      - "transactions"
+      summary: "Actualiza una transacción"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reference"
+        in: "path"
+        description: "Reference de la petición deseada"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "msg: Transaccion actualizada"
+        "404":
+          description: "msg: Transaccion no existe en la db o ..."
+          schema:
+            $ref: "#/definitions/MsgTransaction"
+    delete:
+      tags:
+      - "transactions"
+      summary: "Borra una transacción"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reference"
+        in: "path"
+        description: "Reference de la petición deseada"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "msg: Transaccion eliminada"
+        "404":
+          description: "msg: Transaccion no existe en la db"
+  /summary/transactions:
+    get:
+      tags:
+      - "summary"
+      summary: "Muestra el inflow y outflow total por usuario"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Muestra un resumen de inflow y outflow por usuario"
+          schema:
+            $ref: "#/definitions/S1_Transaction"
+        "400":
+          description: "msg: No hay transacciones en la db"
+  /summary/transactions/{user_email}:
+    get:
+      tags:
+      - "summary"
+      summary: "Muestra la suma de cantidades por categoría de transacción de algun usuario"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "user_email"
+        in: "path"
+        description: "user_email del usuario deseado"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Muestra la suma de transacciones del usuario"
+          schema:
+            $ref: "#/definitions/S2_Transaction"
+        "404":
+          description: "msg: Usuario no existe en la db / Usuario no tiene transacciones"
+definitions:
+  User:
+    type: "object"
+    required:
+    - "user_email"
+    properties:
+      user_email:
+        type: "string"
+      first_name:
+        type: "string"
+      last_name:
+        type: "string"
+      address:
+        type: "string"
+    xml:
+      name: "User"
+  Transaction:
+    type: "object"
+    required:
+    - "reference"
+    properties:
+      reference:
+        type: "string"
+      date:
+        type: "string"
+      amount:
+        type: "string"
+      type:
+        type: "string"
+      cateegory:
+        type: "string"
+      user_email:
+        type: "string"
+    xml:
+      name: "Transaction"
+  UserExample:
+    type: "object"
+    required:
+    - "user_email"
+    properties:
+      user_email:
+        example: "janedoe@email.com"
+      first_name:
+        example: "Lucas"
+      last_name:
+        example: "Rodriguez"
+      address:
+        example: "Una dirección"
+    xml:
+      name: "User"
+  TransactionExample:
+    type: "object"
+    required:
+    - "reference"
+    properties:
+      reference:
+        example: "000051"
+      date:
+        example: "2020-01-03"
+      amount:
+        example: "-51.13"
+      type:
+        example: "outflow"
+      cateegory:
+        example: "groceries"
+      user_email:
+        example: "janedoe@email.com"
+  MsgTransaction:
+    type: "object"
+    properties:
+      msg1:
+        type: "string"
+        example: "Tipo de transaccion no valido"
+      msg2:
+        type: "string"
+        example: "La cantidad debe de ser positiva"
+      msg3:
+        type: "string"
+        example: "La cantidad debe de ser negativa"
+  S1_Transaction:
+    type: "object"
+    properties:
+      user_email:
+        type: "string"
+        example: "janedoe@email.com"
+      total_inflow:
+        type: "string"
+        example: "2651.44"
+      total_outflow:
+        type: "string"
+        example: "-761.85"        
+  S2_Transaction:
+    type: "object"
+    properties:
+      inflow:
+        $ref: "#/definitions/Inflow"
+      outflow:
+        $ref: "#/definitions/Outflow"
+  Inflow:
+    type: "object"
+    properties:
+      salary:
+        example: "2500.72"
+      savings:
+        example: "150.72"
+  Outflow:
+    type: "object"
+    properties:
+      groceries:
+        example: "-51.13"
+      rent:
+        example: "-560.00"
+      transfer:
+        example: "-150.72"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"        
