@@ -36,3 +36,26 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: ordinario
       ME_CONFIG_MONGODB_SERVER: BaseDatos
+
+  #Creando el Contenedor D --> Python Registro automaticos 
+  basic_python:
+    build: ./info
+    container_name: registros_python
+    depends_on:
+      - db
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ./info
+        target: /usr/src/app
+
+  #Creando el Contenedor E --> Swagger UI
+  swagger-ui:
+        image: swaggerapi/swagger-ui
+        container_name: swagger-ui
+        ports:
+        - "8080:8080"
+        volumes:
+        - ./swagger:/usr/share/nginx/html/swagger
+        environment:
+            API_URL: ./swagger/swagger.yaml
