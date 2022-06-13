@@ -1,0 +1,14 @@
+[
+    {
+        "first_name": "Jhon",
+        "last_name": "Doedicurus",
+        "address": "San Lorenzo #243",
+        "user_email": "johndoe@email.com"
+    },
+    {
+        "first_name": "Jane",
+        "last_name": "Doeris",
+        "address": "Zaragoza #4301",
+        "user_email": "janedoe@email.com"
+    }
+]
