@@ -1,0 +1,38 @@
+version: "3.2"
+services:
+  #Creando el Contenedor A --> API Flask
+  api_python:
+    build: ./api
+    container_name: api_python
+    depends_on:
+      - db
+    ports:
+      - 5000:5000
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ./api
+        target: /usr/src/app
+
+  #Creando el Contenedor B --> DB mongo
+  db:
+    image: mongo
+    container_name: BaseDatos
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ordinario
+
+  #Creando el Contenedor C --> DBMS de mongo
+  dbms:
+    image: mongo-express
+    container_name: interfaz_db
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: ordinario
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ordinario
+      ME_CONFIG_MONGODB_SERVER: BaseDatos
