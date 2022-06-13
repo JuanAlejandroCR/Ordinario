@@ -48,3 +48,14 @@ services:
       - type: bind
         source: ./info
         target: /usr/src/app
+
+  #Creando el Contenedor E --> Swagger UI
+  swagger-ui:
+        image: swaggerapi/swagger-ui
+        container_name: swagger-ui
+        ports:
+        - "8080:8080"
+        volumes:
+        - ./swagger:/usr/share/nginx/html/swagger
+        environment:
+            API_URL: ./swagger/swagger.yaml
